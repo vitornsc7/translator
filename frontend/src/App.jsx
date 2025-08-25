@@ -1,35 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css"; // estilos separados
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [texto, setTexto] = useState("");
+  const [idioma, setIdioma] = useState("yoda");
+  const [resultado, setResultado] = useState("> Aguardando input...");
+  const [loading, setLoading] = useState(false);
+
+  const traduzir = async () => {
+    if (!texto.trim()) {
+      setResultado("> Digite um texto para traduzir.");
+      return;
+    }
+
+    setLoading(true);
+    setResultado("");
+
+    try {
+      const response = await fetch(
+        `https://api.funtranslations.com/translate/${idioma}.json`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ text: texto }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.contents) {
+        setResultado(`> ${data.contents.translated}`);
+      } else {
+        setResultado("> ⚠️ Erro ou limite da API atingido.");
+      }
+    } catch (e) {
+      setResultado("> ❌ Erro ao traduzir.");
+    }
+
+    setLoading(false);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="container">
+      <h2>Fun Translation</h2>
+
+      <textarea
+        rows="4"
+        value={texto}
+        onChange={(e) => setTexto(e.target.value)}
+        placeholder="> Digite seu texto em português."
+      />
+
+      <select value={idioma} onChange={(e) => setIdioma(e.target.value)}>
+        <option value="yoda">Yoda</option>
+        <option value="pirate">Pirata</option>
+        <option value="minion">Minion</option>
+        <option value="valyrian">Valyrian</option>
+        <option value="klingon">Klingon</option>
+      </select>
+
+      <button onClick={traduzir} disabled={loading}>
+        {loading ? "[ Traduzindo... ]" : "[ Traduzir ]"}
+      </button>
+
+      <div className="resultado">{resultado}</div>
+    </div>
+  );
 }
 
-export default App
+export default App;

@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>weather-viewer</artifactId>
+	<artifactId>translator</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>weather-viewer</name>
-	<description>Projeto de visualização de clima</description>
+	<name>translator</name>
+	<description>Projeto de traduções divertidas</description>
 	<url/>
 	<licenses>
 		<license/>

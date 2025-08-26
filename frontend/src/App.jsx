@@ -1,10 +1,11 @@
 import { useState } from "react";
-import "./App.css"; // estilos separados
+import { translate } from "../src/services/API/klingonservice"; // import do service
+import "./App.css";
 
 function App() {
   const [texto, setTexto] = useState("");
   const [idioma, setIdioma] = useState("yoda");
-  const [resultado, setResultado] = useState("> Aguardando input...");
+  const [resultado, setResultado] = useState("> Waiting input...");
   const [loading, setLoading] = useState(false);
 
   const traduzir = async () => {
@@ -17,23 +18,20 @@ function App() {
     setResultado("");
 
     try {
-      const response = await fetch(
-        `https://api.funtranslations.com/translate/${idioma}.json`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({ text: texto }),
-        }
-      );
+      let translated;
 
-      const data = await response.json();
-      if (data.contents) {
-        setResultado(`> ${data.contents.translated}`);
+      const res = await translate(idioma, texto);
+      
+      if (res.translated) {
+        translated = res.translated;
       } else {
-        setResultado("> ⚠️ Erro ou limite da API atingido.");
+        translated = `> ⚠️ ${res.error}`;
       }
+
+      setResultado(`> ${translated}`);
     } catch (e) {
       setResultado("> ❌ Erro ao traduzir.");
+      console.log(e);
     }
 
     setLoading(false);
@@ -47,7 +45,7 @@ function App() {
         rows="4"
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
-        placeholder="> Digite seu texto em português."
+        placeholder="> Type your text in english."
       />
 
       <select value={idioma} onChange={(e) => setIdioma(e.target.value)}>
@@ -59,7 +57,7 @@ function App() {
       </select>
 
       <button onClick={traduzir} disabled={loading}>
-        {loading ? "[ Traduzindo... ]" : "[ Traduzir ]"}
+        {loading ? "[ Traduzindo... ]" : "[ Translate ]"}
       </button>
 
       <div className="resultado">{resultado}</div>

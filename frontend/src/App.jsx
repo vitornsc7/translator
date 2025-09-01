@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { translate } from "../src/services/API/klingonservice"; // import do service
+import { translate } from "./services/API/klingonservice"; // import do service
 import "./App.css";
 
 function App() {
@@ -21,7 +21,7 @@ function App() {
       let translated;
 
       const res = await translate(idioma, texto);
-      
+
       if (res.translated) {
         translated = res.translated;
       } else {
